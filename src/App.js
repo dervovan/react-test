@@ -3,30 +3,16 @@ import React, { Component } from 'react';
 import './App.css';
 // import ReactDOM from 'react-dom';
 
-// class App extends Component {
-//   render() {
-//     return (
-//       <div className="App">
-//         <header className="App-header">
-//           <img src={logo} className="App-logo" alt="logo" />
-//           <h1 className="App-title">Welcome to React</h1>
-//         </header>
-//         <p className="App-intro">
-//           To get started, edit <code>src/App.js</code> and save to reload.
-//         </p>
-//       </div>
-//     );
-//   }
-// }
 class Game extends Component {
   constructor(){
     super();
-    this.state = {iteration: 0, timeLineSize: 0};
+    this.state = {currentIteration: 0, timeLineSize: 0};
     this.addIteration = this.addIteration.bind(this);
+    this.changeIteration = this.changeIteration.bind(this);
     this.timeLine = [];
   }
   static BoardSize(){
-    return 80;
+    return 30;
   }
 
   static CellSize(){
@@ -34,24 +20,27 @@ class Game extends Component {
   }
 
   addIteration(newState){
-    this.setState(
-      (prev) => { 
-        return {
-          iteration: ++prev.iteration,
-          timeLineSize: ++prev.timeLineSize}
-      });
     this.timeLine.push(newState);
+    this.setState(
+      (prev) =>({         
+          currentIteration: ++prev.currentIteration,
+          timeLineSize: ++prev.timeLineSize
+      }));
+  }
+
+  changeIteration(args){
+    console.log(1);
+    // this.setState(
+    //   (prev) => { 
+    //     return {
+    //       currentIteration: arguments.value,
+    //       timeLineSize: prev.timeLineSize
+    //     }
+    //   });
   }
 
 
-
-
-  
   // to do  - pass iteration to board and show it
-
-
-
-
 
 
   render() {
@@ -61,7 +50,12 @@ class Game extends Component {
           <Board size={Game.BoardSize()} addIteration = {this.addIteration} iteration = {this.state.iteration}/>
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div>
+            <SelectIteration 
+              currentValue = {this.state.currentIteration} 
+              onIterationChanged = {this.changeIteration}
+              maxValue = {this.state.timeLineSize} />
+          </div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
@@ -78,9 +72,7 @@ class Square extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     if (nextProps.value !== this.state.value){
-      // console.log(nextProps.value + '---' + this.state.value);
-      // console.log(this.props.rowIndex, this.props.columnIndex);
-      this.setState((prev) => {return {value: nextProps.value}});
+      this.setState((prev) => ({value: nextProps.value}));
       return true;
     }
 
@@ -89,29 +81,18 @@ class Square extends Component {
 
   handleClick(){
     this.props.handleClick(this.props.rowIndex, this.props.columnIndex);
-    //this.setState(prev => {return {value: !prev.value}})
-    // this.setState(prevState => ({
-    //   cssAdditional: prevState.value ? "square--empty" : "square--filled",
-    //   value: !prevState.value
-    // }));
   }
 
   componentDidMount() {
-    // When the component is mounted, add your DOM listener to the "nv" elem.
-    // (The "nv" elem is assigned in the render function.)
     this.nv.addEventListener("mouseover", this.handleClick);
   }
 
   componentWillUnmount() {
-    // Make sure to remove the DOM listener when the component is unmounted.
     this.nv.removeEventListener("mouseover", this.handleClick);
   }
 
   render() {
     // console.log('square');
-    //var cssClass = "square " + (this.props.value ? "square--filled" : "square--empty");
-    //this.addEventListener('click', () => {this.handleClick});
-    //let cssAdditional = this.props.value ? "square--filled" : "square--empty";
     return (
       <rect 
         ref={elem => this.nv = elem} 
@@ -130,14 +111,11 @@ class Row extends Component {
    }
 
   shouldComponentUpdate(nextProps, nextState) {
-    //  console.log("---");
-    // console.log(nextProps.rowData);
-    // console.log(this.state.rowData);
     if (this.compareArrays(nextProps.rowData, this.state.rowData)){
       return false;
     }
 
-    this.setState(() => {return {rowData: nextProps.rowData}});
+    this.setState(() => ({rowData: nextProps.rowData}));
     return true;
   }
 
@@ -165,51 +143,23 @@ class Board extends Component {
   constructor(data){
     super(data);
     this.state = {dataGrid : Array(Math.min(data.size, 100)).fill(false).map(() => Array(Math.min(data.size, 150)).fill(false))}
-    // this.dataGrid = Array(data.size).fill(Array(data.size).fill(false));
-    // this.dataGrid = Array(Math.min(data.size, 220)).fill(false).map(() => Array(Math.min(data.size, 140)).fill(false));
     this.handleCellClick = this.handleCellClick.bind(this);
   }
 
   addIteration(state){
     this.props.addIteration(state);
-    // Game.AddIteration(state);
   }
 
   handleCellClick(rowIndex, columnIndex){
-    // var rowNum = Math.floor(index/Game.BoardSize());
-    // var column = index%Game.BoardSize();
-    // console.log(rowNum);
-    // console.log(this.dataGrid);
-    // console.log(this.dataGrid[rowNum][column]);
-    // var temp = this.dataGrid[rowIndex].slice(columnIndex, columnIndex + 1);
-    // console.log("---" + rowIndex + '---' + columnIndex + '---' + temp[0]);
-    // console.log(this.dataGrid[rowIndex][columnIndex]);
-    //this.dataGrid[rowNum][column] = !this.dataGrid[rowNum][column];
-    // this.setState(prev => {
-    //   // var dataGridCopy = prev.dataGrid.slice().map(row => {return row.slice();});
-    //   // dataGridCopy[rowIndex][columnIndex] = !dataGridCopy[rowIndex][columnIndex];
-    //   return {
-    //     dataGrid: prev.dataGrid[rowIndex][columnIndex] = !prev.dataGrid[rowIndex][columnIndex]
-    //   }
-    // });
-    var copy = this.state.dataGrid.slice().map(row => {return row.slice()});
+    var copy = this.state.dataGrid.slice().map(row => row.slice());
     copy[rowIndex][columnIndex] = !copy[rowIndex][columnIndex];
-    this.setState(() => {return {dataGrid: copy}});
+    this.setState(() => ({dataGrid: copy}));
     this.addIteration(copy);
-        
-    // console.log(this.state.dataGrid);
-    //setTimeout(() => {this.dataGrid[rowIndex][columnIndex] = !this.dataGrid[rowIndex][columnIndex]}, 500);
   }
-
-  // componentDidUpdate(prevProps, prevState){
-    
-  // }
   
   render() {
-    //console.log('board');
-
     return (
-      <svg width="1200" height="700" className="svg-root" id="gameSVG" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
+      <svg className="svg-container" id="gameSVG" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
         {this.state.dataGrid.map((rowData, index) => {
             return <Row key={'row'+ index} rowData={rowData} rowIndex={index} handleCellClick={this.handleCellClick}/>;
         })}
@@ -218,7 +168,45 @@ class Board extends Component {
   }
 }
 
+class SelectIteration extends Component{
+  constructor(props){
+    super(props);
+  }
 
+
+  render(){
+    return (
+      <div className="iteration-select">
+        <input 
+          className="range-picker" 
+          type="range" 
+          value={this.props.currentValue} 
+          min = {0} 
+          max = {this.props.maxValue} 
+          onChange={this.props.onIterationChanged} />
+          <ShowCurrentIteration currentValue={this.props.currentValue} max={this.props.maxValue}/>
+      </div>
+    );
+  }
+}
+
+class ShowCurrentIteration extends Component{
+  render(){
+    return(
+      <div className="range-legend" type="text">
+        <div className="range-legend-value">
+          {0}
+        </div>
+        <div className="range-legend-value">
+          {this.props.currentValue}
+        </div>
+        <div className="range-legend-value">
+          {this.props.max}
+        </div>
+      </div>
+    );
+  }
+}
 
 // ========================================
 

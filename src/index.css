@@ -11,6 +11,11 @@ body {
 ol, ul {
   padding-left: 30px;
 }
+.root{
+  display: flex;
+  width: 650px;
+  flex-wrap: wrap;
+}
 
 .board-row:after {
   clear: both;
@@ -60,10 +65,19 @@ ol, ul {
 }
 
 .game-board {
-  border-top: 1px solid #999;
-  border-left: 1px solid #999;
+  display: flex;
+  width: 650px;
+  /* border-top: 1px solid #999;
+  border-left: 1px solid #999; */
 }
-
+.part-block{
+  width: 210px;
+  height: 210px;
+}
+.svg-container{
+  width: 210px;
+  height: 210px;
+}
 .game-info {
   margin-left: 20px;
 }
@@ -73,4 +87,23 @@ ol, ul {
 }
 .square--empty{
   background-color: white;
+}
+.iteration-select{
+  display: flex;
+  width: 250px;
+  flex-wrap: wrap;
+  justify-content: center;
+  
+}
+.range-picker{
+  width: 200px;
+  margin: 10px 0;
+}
+.range-legend{
+  width: 200px;
+  display: flex;
+  justify-content: space-between;
+}
+.range-legend-value{
+  
 }

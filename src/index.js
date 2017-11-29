@@ -5,5 +5,9 @@ import './index.css';
 import Game from './App';
 import registerServiceWorker from './registerServiceWorker';
 
-ReactDOM.render(<Game />, document.getElementById('root'));
+console.log(document.getElementsByClassName('part-block'));
+[].forEach.call(document.getElementsByClassName('part-block'), (block) => ReactDOM.render(<Game />, block));
+
+// ReactDOM.render(<Game />, document.getElementById('block-0-0'));
+// ReactDOM.render(<Game />, document.getElementById('root'));
 registerServiceWorker();

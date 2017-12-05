@@ -1,7 +1,27 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
+import Utility from './Utility'
 // import ReactDOM from 'react-dom';
+
+class StateProcessor {
+  constructor(rowSize){
+    this.state = {};
+    this.rowSize = rowSize;
+  }
+
+  updateState(newState, sourceBoardIndex){
+    var row = Math.floor(sourceBoardIndex/this.rowSize);
+    var column = sourceBoardIndex%this.rowSize;
+    
+
+  }
+
+  get currentState(){
+    return this.state;
+  }
+}
+
 
 class Game extends Component {
   constructor(){
@@ -11,15 +31,14 @@ class Game extends Component {
     this.changeIteration = this.changeIteration.bind(this);
     this.timeLine = [];
   }
-  static BoardSize(){
-    return 30;
+
+  static get size(){
+    return 15;
   }
 
-  static CellSize(){
-    return 7;
-  }
-
-  addIteration(newState){
+  addIteration(newState, boardIndex){
+    return;
+    //!!!!!!!!!
     this.timeLine.push(newState);
     this.setState(
       (prev) =>({         
@@ -39,35 +58,96 @@ class Game extends Component {
     //   });
   }
 
-
   // to do  - pass iteration to board and show it
-
 
   render() {
     return (
       <div className="game">
         <div className="game-board">
-          <Board size={Game.BoardSize()} addIteration = {this.addIteration} iteration = {this.state.iteration}/>
-        </div>
-        <div className="game-info">
-          <div>
-            <SelectIteration 
-              currentValue = {this.state.currentIteration} 
-              onIterationChanged = {this.changeIteration}
-              maxValue = {this.state.timeLineSize} />
-          </div>
-          <ol>{/* TODO */}</ol>
+          {Array(Game.size).fill(null).map((val, index) => 
+            (<Board key={"gb" + index} addIteration = {this.addIteration} index={index} />)
+          )}
         </div>
       </div>
     );
   }
 }
 
+class Board extends Component {
+  constructor(data){
+    super(data);
+    this.state = {dataGrid : Array(Board.size).fill(false).map(() => Array(Board.size).fill(false))}
+    this.handleCellClick = this.handleCellClick.bind(this);
+    //window.addEventListener('test', () => )
+  }
+
+  static get size(){
+    return 30;
+  }
+
+  addIteration(state){
+    this.props.addIteration(state);
+  }
+
+  handleCellClick(rowIndex, columnIndex){
+    var copy = this.state.dataGrid.slice().map(row => row.slice());
+    copy[rowIndex][columnIndex] = !copy[rowIndex][columnIndex];
+    this.setState(() => ({dataGrid: copy}));
+    this.addIteration(copy);
+  }
+  
+  render() {
+    return (
+      <svg className="svg-container">
+        {this.state.dataGrid.map((rowData, index) => 
+            (<Row key={'row'+ index} rowData={rowData} rowIndex={index} handleCellClick={this.handleCellClick}/>)
+        )}
+      </svg>
+    );
+  }
+}
+
+
+class Row extends Component {
+  constructor(props){
+    super(props);
+    this.state = {rowData: this.props.rowData};
+  }
+
+ shouldComponentUpdate(nextProps, nextState) {
+   if (Utility.shallowArraysCompare(nextProps.rowData, this.state.rowData)){
+     return false;
+   }
+
+   this.setState(() => ({rowData: nextProps.rowData}));
+   return true;
+ }
+
+ render(){
+   return (
+         this.state.rowData.map((element, index) => {
+           var squareIndex = this.props.rowIndex * Board.size + index;
+           return <Square 
+                     key={'sq'+squareIndex} 
+                     rowIndex={this.props.rowIndex} 
+                     columnIndex={index} 
+                     handleClick={this.props.handleCellClick}
+                     value={element}/>
+         })
+   );
+ }
+}
+
 class Square extends Component {
   constructor(props){
+    console.log('square');
     super(props);
     this.state = {value: props.value};
     this.handleClick = this.handleClick.bind(this);
+  }
+
+  static get size(){
+    return 7;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -84,11 +164,11 @@ class Square extends Component {
   }
 
   componentDidMount() {
-    this.nv.addEventListener("mouseover", this.handleClick);
+    this.nv.addEventListener("click", this.handleClick);
   }
 
   componentWillUnmount() {
-    this.nv.removeEventListener("mouseover", this.handleClick);
+    this.nv.removeEventListener("click", this.handleClick);
   }
 
   render() {
@@ -97,82 +177,34 @@ class Square extends Component {
       <rect 
         ref={elem => this.nv = elem} 
         className={"square " + (this.props.value ? "square--filled" : "square--empty")}
-        x = {this.props.columnIndex * Game.CellSize() }
-        y = {this.props.rowIndex * Game.CellSize() }
+        x = {this.props.columnIndex * Square.size }
+        y = {this.props.rowIndex * Square.size }
         /> 
     );
   }
 }
 
-class Row extends Component {
-   constructor(props){
-     super(props);
-     this.state = {rowData: this.props.rowData};
-   }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.compareArrays(nextProps.rowData, this.state.rowData)){
-      return false;
-    }
-
-    this.setState(() => ({rowData: nextProps.rowData}));
-    return true;
-  }
-
-  compareArrays(a1, a2){
-    return a1.length === a2.length
-           && a1.every((val, index) => val === a2[index]);
-  }
-
+class GameInfo extends Component{
   render(){
     return (
-          this.state.rowData.map((element, index) => {
-            var squareIndex = this.props.rowIndex * Game.BoardSize() + index;
-            return <Square 
-                      key={'sq'+squareIndex} 
-                      rowIndex={this.props.rowIndex} 
-                      columnIndex={index} 
-                      handleClick={this.props.handleCellClick}
-                      value={element}/>
-          })
+       <div className="game-info">
+          <div>
+            <SelectIteration 
+              currentValue = {this.state.currentIteration} 
+              onIterationChanged = {this.changeIteration}
+              maxValue = {this.state.timeLineSize} />
+          </div>
+          <ol>{/* TODO */}</ol>
+        </div>
     );
   }
-}
 
-class Board extends Component {
-  constructor(data){
-    super(data);
-    this.state = {dataGrid : Array(Math.min(data.size, 100)).fill(false).map(() => Array(Math.min(data.size, 150)).fill(false))}
-    this.handleCellClick = this.handleCellClick.bind(this);
-  }
-
-  addIteration(state){
-    this.props.addIteration(state);
-  }
-
-  handleCellClick(rowIndex, columnIndex){
-    var copy = this.state.dataGrid.slice().map(row => row.slice());
-    copy[rowIndex][columnIndex] = !copy[rowIndex][columnIndex];
-    this.setState(() => ({dataGrid: copy}));
-    this.addIteration(copy);
-  }
-  
-  render() {
-    return (
-      <svg className="svg-container" id="gameSVG" overflow="hidden" xmlns="http://www.w3.org/2000/svg">
-        {this.state.dataGrid.map((rowData, index) => {
-            return <Row key={'row'+ index} rowData={rowData} rowIndex={index} handleCellClick={this.handleCellClick}/>;
-        })}
-      </svg>
-    );
-  }
 }
 
 class SelectIteration extends Component{
-  constructor(props){
-    super(props);
-  }
-
+  // constructor(props){
+  //   super(props);
+  // }
 
   render(){
     return (
@@ -217,3 +249,4 @@ class ShowCurrentIteration extends Component{
 
 //export default App;
 export default Game;
+export {Utility};

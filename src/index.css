@@ -11,9 +11,9 @@ body {
 ol, ul {
   padding-left: 30px;
 }
-.root{
+.game-board{
   display: flex;
-  width: 650px;
+  width: 1050px;
   flex-wrap: wrap;
 }
 
@@ -64,12 +64,6 @@ ol, ul {
   flex-direction: row;
 }
 
-.game-board {
-  display: flex;
-  width: 650px;
-  /* border-top: 1px solid #999;
-  border-left: 1px solid #999; */
-}
 .part-block{
   width: 210px;
   height: 210px;

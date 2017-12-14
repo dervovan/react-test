@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-//import utl from '../Utility/Utility';
+//import utl from '../Logic/Utility';
 
 class Square extends Component {
     constructor(props){
@@ -39,7 +39,6 @@ class Square extends Component {
     }
   
     render() {
-      // console.log('square');
       return (
         <rect 
           ref={elem => this.nv = elem} 

@@ -1,13 +1,4 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-// import App from './App';
-import utl from './Utility/Utility.js';
-
-// it('renders without crashing', () => {
-//   const div = document.createElement('div');
-//   ReactDOM.render(<App />, div);
-// });
-
+import utl from '../Logic/Utility.js';
 
 it('CA different length', () => {
   //
@@ -191,14 +182,14 @@ it('M2DA exact merge', () => {
   
   var target = Array(10).fill(0).map(() => Array(10).fill(0))
   var source = Array(10).fill(0).map(() => Array(10).fill(1))
-  expect(utl.merge2DArrays(target, source).result).toEqual(Array(10).fill(0).map(() => Array(10).fill(1)));
+  expect(utl.merge2DArrays(target, source)).toEqual(Array(10).fill(0).map(() => Array(10).fill(1)));
 });
 
 it('M2DA small source fits center', () => {
   
   var target = Array(7).fill(0).map(() => Array(7).fill(0))
   var source = Array(5).fill(0).map(() => Array(5).fill(1))
-  expect(utl.merge2DArrays(target, source, 1, 1).result).toEqual(
+  expect(utl.merge2DArrays(target, source, 1, 1)).toEqual(
   [ [ 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 1, 1, 1, 1, 1, 0 ],
     [ 0, 1, 1, 1, 1, 1, 0 ],
@@ -213,7 +204,7 @@ it('M2DA small source no position params', () => {
   
   var target = Array(7).fill(0).map(() => Array(7).fill(0))
   var source = Array(5).fill(0).map(() => Array(5).fill(1))
-  expect(utl.merge2DArrays(target, source).result).toEqual(
+  expect(utl.merge2DArrays(target, source)).toEqual(
   [ [ 1, 1, 1, 1, 1, 0, 0 ],
     [ 1, 1, 1, 1, 1, 0, 0 ],
     [ 1, 1, 1, 1, 1, 0, 0 ],
@@ -228,7 +219,7 @@ it('M2DA small source beyond the bounds of target' , () => {
   
   var target = Array(7).fill(0).map(() => Array(7).fill(0))
   var source = Array(5).fill(0).map(() => Array(5).fill(1))
-  expect(utl.merge2DArrays(target, source, 3, 3).result).toEqual(
+  expect(utl.merge2DArrays(target, source, 3, 3)).toEqual(
   [ [ 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0, 0 ],
@@ -243,7 +234,7 @@ it('M2DA small target beyond the bounds of target' , () => {
   
   var target = Array(5).fill(0).map(() => Array(5).fill(0))
   var source = Array(7).fill(0).map(() => Array(7).fill(1))
-  expect(utl.merge2DArrays(target, source, 3, 3).result).toEqual(
+  expect(utl.merge2DArrays(target, source, 3, 3)).toEqual(
   [ [ 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0 ],
@@ -256,7 +247,7 @@ it('M2DA small target no start position' , () => {
   
   var target = Array(5).fill(0).map(() => Array(5).fill(0))
   var source = Array(7).fill(0).map(() => Array(7).fill(1))
-  expect(utl.merge2DArrays(target, source).result).toEqual(
+  expect(utl.merge2DArrays(target, source)).toEqual(
   [ [ 1, 1, 1, 1, 1 ],
     [ 1, 1, 1, 1, 1 ],
     [ 1, 1, 1, 1, 1 ],
@@ -270,7 +261,7 @@ it('M2DA empty source' , () => {
   var target = Array(5).fill(0).map(() => Array(5).fill(0));
   var source = Array(0).fill(1);
   //console.log(utl.merge2DArrays(target, source));
-  expect(utl.merge2DArrays(target, source).result).toEqual(
+  expect(utl.merge2DArrays(target, source)).toEqual(
   [ [ 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0 ],
@@ -284,7 +275,7 @@ it('M2DA step by step changes' , () => {
   var target = Array(7).fill(0).map(() => Array(7).fill(0))
   var source = Array(5).fill(0).map(() => Array(5).fill(1))
   
-  target = utl.merge2DArrays(target, source, 1, 1).result;
+  target = utl.merge2DArrays(target, source, 1, 1);
   expect(target).toEqual(
   [ [ 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 1, 1, 1, 1, 1, 0 ],
@@ -295,7 +286,7 @@ it('M2DA step by step changes' , () => {
     [ 0, 0, 0, 0, 0, 0, 0 ] ]
   );
   source = Array(3).fill(0).map(() => Array(3).fill(0))
-  target = utl.merge2DArrays(target, source, 2, 2).result;
+  target = utl.merge2DArrays(target, source, 2, 2);
   
   expect(target).toEqual(
     [ [ 0, 0, 0, 0, 0, 0, 0 ],
@@ -308,7 +299,7 @@ it('M2DA step by step changes' , () => {
   );
 
   source = Array(1).fill(Array(1).fill(1))
-  target = utl.merge2DArrays(target, source, 3, 3).result;
+  target = utl.merge2DArrays(target, source, 3, 3);
   expect(target).toEqual(
   [ [ 0, 0, 0, 0, 0, 0, 0 ],
     [ 0, 1, 1, 1, 1, 1, 0 ],
@@ -320,12 +311,12 @@ it('M2DA step by step changes' , () => {
   );
 });
 
-it('M2DA check result row and column' , () => {
-  
+it('M2DA check result row and column - deprecated' , () => {
+  return ;
   var target = Array(15).fill(0).map(() => Array(15).fill(0));
   var source = Array(4).fill(0).map(() => Array(4).fill(1));
   var res = utl.merge2DArrays(target, source, 10, 5);
-  //console.log(res.result);
+  //console.log(res);
   expect(res.column).toEqual(8);
   expect(res.row).toEqual(13);
 });

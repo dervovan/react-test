@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Square from './Square';
-import utl from '../Utility/Utility';
+import utl from '../Logic/Utility';
 
 class Row extends Component {
     constructor(props){

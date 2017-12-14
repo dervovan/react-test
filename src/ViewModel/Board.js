@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Row from './Row';
-//import utl from '../Utility/Utility';
+//import utl from '../Logic/Utility';
 
 class Board extends Component {
     constructor(data){
@@ -8,29 +8,17 @@ class Board extends Component {
       this.state = {dataGrid : Array(Board.size).fill(false).map(() => Array(Board.size).fill(false))}
       this.handleCellEvent = this.handleCellEvent.bind(this);
       this.index = data.index;
-      //window.addEventListener('test', () => )
     }
   
     static get size(){
       return 30;
     }
   
-    addIteration(state){
-      this.props.addIteration(state);
-    }
-  
     handleCellEvent(args){
       this.props.updateState(this, args);
-      return;
-  
-    //   var copy = this.state.dataGrid.slice().map(row => row.slice());
-    //   copy[args.rowIndex][args.columnIndex] = !args.value;
-    //   this.setState(() => ({dataGrid: copy}));
-    //   this.addIteration(copy);
     }
   
     updateState(newState){
-      console.log('update state');
       this.setState(() => ({dataGrid: newState}));
     }
     

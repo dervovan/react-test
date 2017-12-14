@@ -1,4 +1,11 @@
 class utl{
+    static constants (){
+        return {
+            stepChangedByInputEventName: 'stepChangedByInput',
+            stateProcessedEventName: 'stateProcessed'
+        };
+    }
+
     static shallowArraysCompare (a1, a2){
       return a1.length === a2.length
              && a1.every((val, index) => val === a2[index]);
@@ -61,7 +68,7 @@ class utl{
              row++, i++){
                 shallowCopy[row] = utl.replaceArrData(shallowCopy[row], source[i], column);
         }
-        return { result: shallowCopy, row: --row, column: column + --i };
+        return shallowCopy;
     }
   
     static replaceArrData(target, source, targetX){

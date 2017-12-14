@@ -101,3 +101,8 @@ ol, ul {
 .range-legend-value{
   
 }
+.add-step-button{
+  border: 1px red solid;
+  width: 150px;
+  height: 150px;
+}

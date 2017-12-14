@@ -1,112 +1,120 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
-//import utl from './Utility/Utility'
-import StateProcessor from './Utility/StateProcessor'
+import utl from './Logic/Utility'
+import StateProcessor from './Logic/StateProcessor'
 import Board from './ViewModel/Board'
 // import ReactDOM from 'react-dom';
-
-
 
 class Game extends Component {
   constructor(){
     super();
-    this.state = {currentIteration: 0, timeLineSize: 0};
-    this.addIteration = this.addIteration.bind(this);
-    this.changeIteration = this.changeIteration.bind(this);
-    this.timeLine = [];
-    this.StateProcessor = new StateProcessor(Game.size);
-  }
-
-  static get size(){
-    return {
+    this.size =  {
       boardSize: 30,
       length: 15,
       rowCount: 3,
       columnCount: 5
     };
+    //this.onIterationChanged = this.onIterationChanged.bind(this);
+    this.timeLine = [];
+    var initialState = Array(this.size.rowCount * this.size.boardSize).fill(false).map(() => Array(this.size.boardSize * this.size.columnCount).fill(false));
+    this.StateProcessor = new StateProcessor(this.size, initialState);
   }
 
-  addIteration(newState, boardIndex){
-    return;
-    //!!!!!!!!!
-    this.timeLine.push(newState);
-    this.setState(
-      (prev) =>({         
-          currentIteration: ++prev.currentIteration,
-          timeLineSize: ++prev.timeLineSize
-      }));
-  }
-
-  changeIteration(args){
-    console.log(1);
-    // this.setState(
-    //   (prev) => { 
-    //     return {
-    //       currentIteration: arguments.value,
-    //       timeLineSize: prev.timeLineSize
-    //     }
-    //   });
-  }
-
+  // onIterationChanged(args){
+  //   this.StateProcessor.changeTimeStamp(args);
+  // }
   // to do  - pass iteration to board and show it
 
   render() {
     return (
       <div className = "game">
         <div className = "game-board">
-          {Array(Game.size.length).fill(null).map((val, index) => 
+          {Array(this.size.length).fill(null).map((val, index) => 
             (<Board 
               key = {"gb" + index} 
-              
-              addIteration = {this.addIteration} 
               index = {index} 
               updateState = {this.StateProcessor.updateByCellEvent} />)
           )}
         </div>
+        <GameInfo 
+          currentStep = {this.StateProcessor.currentStep}
+          // onStepChanged = {this.StateProcessor.onStepChanged}
+          timeLineSize = {this.StateProcessor.timeLine.length}
+        />
       </div>
     );
   }
 }
 
-
-
-
-
-
 class GameInfo extends Component{
+  constructor(props){
+    super(props);
+    // this.state = {currentStep: props.currentStep, maxStep: props.timeLineSize};
+    this.state = {currentStep: 0, maxStep: 0};
+    // this.onStepChanged = this.onStepChanged.bind(this);
+    // this.changeState = this.changeState.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener(utl.constants().stateProcessedEventName, 
+      (event) => this.setState((prev, props) => {
+        // console.log(1);
+        // console.log('---', event.detail.currentStep, event.detail.maxStep, prev.maxStep);
+        return {currentStep: event.detail.currentStep, maxStep: event.detail.maxStep}
+      }));
+
+    window.addEventListener(utl.constants().stepChangedByInputEventName, 
+      (event) => this.setState((prev, props) => {
+        // console.log(2);
+        return {currentStep: event.detail.currentStep}
+      }));
+  }
+
   render(){
     return (
        <div className="game-info">
           <div>
             <SelectIteration 
-              currentValue = {this.state.currentIteration} 
-              onIterationChanged = {this.changeIteration}
-              maxValue = {this.state.timeLineSize} />
+              currentValue = {this.state.currentStep} 
+              onStepChanged = {this.onStepChanged}
+              maxValue = {this.state.maxStep} />
+          </div>
+          <div>
+            {/* <AddStep /> */}
           </div>
           <ol>{/* TODO */}</ol>
         </div>
     );
   }
-
 }
 
 class SelectIteration extends Component{
-  // constructor(props){
-  //   super(props);
-  // }
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+    //console.log(utl.constants().stepChangedByInputEventName);
+    window.dispatchEvent(
+      new CustomEvent(
+          utl.constants().stepChangedByInputEventName, 
+          {detail: {currentStep: event.target.value, maxStep: event.target.max}}));
+  }
 
   render(){
     return (
-      <div className="iteration-select">
+      <div className = "iteration-select">
         <input 
-          className="range-picker" 
-          type="range" 
-          value={this.props.currentValue} 
+          className = "range-picker" 
+          type = "range" 
+          value = {this.props.currentValue} 
           min = {0} 
           max = {this.props.maxValue} 
-          onChange={this.props.onIterationChanged} />
-          <ShowCurrentIteration currentValue={this.props.currentValue} max={this.props.maxValue}/>
+          onChange = {this.handleChange} />
+          {/* <ShowCurrentIteration currentValue = {this.state.value} max = {this.state.maxValue}/> */}
+          <ShowCurrentIteration currentValue = {this.props.currentValue} max = {this.props.maxValue}/>
       </div>
     );
   }
@@ -125,6 +133,28 @@ class ShowCurrentIteration extends Component{
         <div className="range-legend-value">
           {this.props.max}
         </div>
+      </div>
+    );
+  }
+}
+
+class AddStep extends Component{
+  constructor(){
+    super();
+    this.count = 0;
+  }
+
+  componentDidMount() {
+    this.htmlElement.addEventListener("click", ()=> {
+      this.count++;
+      window.dispatchEvent(new CustomEvent(utl.constants().stateProcessedEventName, {detail: {currentStep: this.count, maxStep: this.count}}));
+     });
+  }
+  
+  render(){
+    return(
+      <div className="add-step-button"
+            ref={elem => this.htmlElement = elem} >
       </div>
     );
   }

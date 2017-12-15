@@ -5,10 +5,11 @@ class StateProcessor {
         this.size = size;
         this.timeLine = [];
         this.curStep = 0;
-
         this.state = initialState;
+        this.boards = [];
         this.timeLine.push(this.state);
         this.updateByCellEvent = this.updateByCellEvent.bind(this);
+        this.updateByStepPicked = utl.debounce(this.updateByStepPicked.bind(this), 500);
         // this.onStepChanged = this.changeTimeStamp.bind(this);
         this.listenToEvents();
     }
@@ -21,6 +22,10 @@ class StateProcessor {
 
     get currentStep(){
         return this.curStep;
+    }
+
+    addBoard(board){
+        this.boards.push(board);
     }
 
     getBoardDataByIndex(index){
@@ -64,14 +69,17 @@ class StateProcessor {
     listenToEvents(){
         window.addEventListener(
             utl.constants().stepChangedByInputEventName, 
-            this.updateByPickedStep);
+            this.updateByStepPicked);
     }
 
-    updateByPickedStep(event){
-        // console.log('--', event);
-        //{detail: {currentStep: event.target.value, maxStep: event.target.max}}
-        
-
+    updateByStepPicked(event){
+        let pickedState = this.timeLine[event.detail.currentStep];
+        for (var i = 0; i <= this.boards.length; i++) {
+            var position = utl.positionByIndex(this.size.length, this.boards[i].props.index);
+            var newState = utl.crop2dArray(pickedState, position.row, position.column, this.size.boardSize);
+            console.log(this.boards[i]);
+            // console.log(this.boards[i].type.prototype.updateState);
+        }
     }
 
     // changeTimeStamp(pickStepElement, args){

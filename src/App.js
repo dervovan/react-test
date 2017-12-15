@@ -15,26 +15,32 @@ class Game extends Component {
       rowCount: 3,
       columnCount: 5
     };
-    //this.onIterationChanged = this.onIterationChanged.bind(this);
-    this.timeLine = [];
     var initialState = Array(this.size.rowCount * this.size.boardSize).fill(false).map(() => Array(this.size.boardSize * this.size.columnCount).fill(false));
+    /// to do - add this state to each board
     this.StateProcessor = new StateProcessor(this.size, initialState);
   }
-
-  // onIterationChanged(args){
-  //   this.StateProcessor.changeTimeStamp(args);
-  // }
-  // to do  - pass iteration to board and show it
 
   render() {
     return (
       <div className = "game">
         <div className = "game-board">
           {Array(this.size.length).fill(null).map((val, index) => 
-            (<Board 
-              key = {"gb" + index} 
-              index = {index} 
-              updateState = {this.StateProcessor.updateByCellEvent} />)
+            {
+               // !!! вот тут - я надеюсь получить ссылку на js-объект Board, который наследует Component.
+               // однако тут я получаю react-объект, у которого непонятно как получить ссылку на внутренний Board 
+               let board =
+                // React.createElement(
+                // Board, { key :"gb" + index, 
+                // index : index, 
+                // updateState : this.StateProcessor.updateByCellEvent })
+                <Board 
+                  key = {"gb" + index} 
+                  index = {index} 
+                  updateState = {this.StateProcessor.updateByCellEvent} />
+
+                  /// тут хочу добавить Board, чтобы потом вызывать его методы.
+                this.StateProcessor.addBoard(board);
+              return board;}
           )}
         </div>
         <GameInfo 
@@ -96,7 +102,7 @@ class SelectIteration extends Component{
   }
 
   handleChange(event) {
-    //console.log(utl.constants().stepChangedByInputEventName);
+    //console.log(' - ', event.target.value , event.target.max, event.target);
     window.dispatchEvent(
       new CustomEvent(
           utl.constants().stepChangedByInputEventName, 

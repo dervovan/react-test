@@ -6,6 +6,17 @@ class utl{
         };
     }
 
+    static debounce(func, delay){
+        var timeout;
+        return function debouncedFunc(){
+          clearTimeout(timeout);
+          var args = arguments;
+          timeout = setTimeout( function(){
+            func.apply(this, args);
+          }.bind(this), delay);
+        }
+    }
+
     static shallowArraysCompare (a1, a2){
       return a1.length === a2.length
              && a1.every((val, index) => val === a2[index]);
@@ -13,16 +24,16 @@ class utl{
 
     static positionByIndex(columnCount, index){
         if (!Number.isInteger(columnCount) || !Number.isInteger(index)){
-            throw "wrong params";
+            console.log('columncount = ', columnCount);
+            console.log('index = ', index);
+            throw Error("wrong params");
         }
-        //console.log(1);
         if (!columnCount || !index){
             return {
                 row: 0,
                 column: 0
             }
         }
-        //console.log(2);
         return {
             row: Math.floor(index/columnCount),
             column: index%columnCount

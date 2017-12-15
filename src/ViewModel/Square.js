@@ -41,7 +41,7 @@ class Square extends Component {
     render() {
       return (
         <rect 
-          ref={elem => this.nv = elem} 
+          ref = {elem => this.nv = elem} 
           className={"square " + (this.props.value ? "square--filled" : "square--empty")}
           x = {this.props.columnIndex * Square.size }
           y = {this.props.rowIndex * Square.size }

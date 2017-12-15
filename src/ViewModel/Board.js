@@ -8,6 +8,7 @@ class Board extends Component {
       this.state = {dataGrid : Array(Board.size).fill(false).map(() => Array(Board.size).fill(false))}
       this.handleCellEvent = this.handleCellEvent.bind(this);
       this.index = data.index;
+      data.sp.addBoard(this);
       // this.updateState = this.updateState.bind(this);
     }
   

@@ -36,10 +36,11 @@ class Game extends Component {
                 <Board 
                   key = {"gb" + index} 
                   index = {index} 
-                  updateState = {this.StateProcessor.updateByCellEvent} />
+                  updateState = {this.StateProcessor.updateByCellEvent}
+                  sp = {this.StateProcessor} />
 
                   /// тут хочу добавить Board, чтобы потом вызывать его методы.
-                this.StateProcessor.addBoard(board);
+                //this.StateProcessor.addBoard(board);
               return board;}
           )}
         </div>

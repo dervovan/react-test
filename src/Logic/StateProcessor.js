@@ -74,11 +74,13 @@ class StateProcessor {
 
     updateByStepPicked(event){
         let pickedState = this.timeLine[event.detail.currentStep];
-        for (var i = 0; i <= this.boards.length; i++) {
-            var position = utl.positionByIndex(this.size.length, this.boards[i].props.index);
+        //console.log(this.boards.length, this.boards[0]);
+        for (var i = 0; i < this.boards.length; i++) {
+            var position = utl.positionByIndex(this.size.length, this.boards[i].index);
             var newState = utl.crop2dArray(pickedState, position.row, position.column, this.size.boardSize);
-            console.log(this.boards[i]);
-            // console.log(this.boards[i].type.prototype.updateState);
+            this.boards[i].updateState(newState);
+            //console.log(this.boards[i]);
+            // console.log(this.boards[i].updateState);
         }
     }
 

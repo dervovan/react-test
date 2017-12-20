@@ -51,7 +51,7 @@ class StateProcessor {
 
     updateByCellEvent(board, args){
         var stateBoard = this.getBoardDataByIndex(board.index);
-        stateBoard.data[args.rowIndex][args.columnIndex] = !args.value;
+        stateBoard.data[args.rowIndex][args.columnIndex] = args.value ? 0 : 1;
         this.timeLine.push(this.state);
         this.onTimeStampAdded();
         this.state = utl.merge2DArrays(this.state, stateBoard.data, stateBoard.stateRow, stateBoard.stateColumn);
@@ -74,14 +74,24 @@ class StateProcessor {
 
     updateByStepPicked(event){
         let pickedState = this.timeLine[event.detail.currentStep];
-        //console.log(this.boards.length, this.boards[0]);
+        //console.log(this.size);
+        //console.log(this.size.length, this.size.columnCount);
+        console.time('1');
         for (var i = 0; i < this.boards.length; i++) {
-            var position = utl.positionByIndex(this.size.length, this.boards[i].index);
-            var newState = utl.crop2dArray(pickedState, position.row, position.column, this.size.boardSize);
+            console.time('2');
+            var position = utl.positionByIndex(this.size.columnCount, this.boards[i].index);
+            //console.log('--', position.row, position.column, this.boards[i].index);
+            var newState = utl.crop2dArray(
+                                    pickedState,
+                                    position.row * this.size.boardSize,
+                                    position.column * this.size.boardSize,
+                                    this.size.boardSize);
             this.boards[i].updateState(newState);
-            //console.log(this.boards[i]);
+            //console.log(newState);
             // console.log(this.boards[i].updateState);
+            console.timeEnd('2');
         }
+        console.timeEnd('1');
     }
 
     // changeTimeStamp(pickStepElement, args){

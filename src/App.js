@@ -15,7 +15,7 @@ class Game extends Component {
       rowCount: 3,
       columnCount: 5
     };
-    var initialState = Array(this.size.rowCount * this.size.boardSize).fill(false).map(() => Array(this.size.boardSize * this.size.columnCount).fill(false));
+    var initialState = Array(this.size.rowCount * this.size.boardSize).fill(false).map(() => Array(this.size.boardSize * this.size.columnCount).fill(0));
     /// to do - add this state to each board
     this.StateProcessor = new StateProcessor(this.size, initialState);
   }

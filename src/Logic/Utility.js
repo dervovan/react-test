@@ -2,7 +2,8 @@ class utl{
     static constants (){
         return {
             stepChangedByInputEventName: 'stepChangedByInput',
-            stateProcessedEventName: 'stateProcessed'
+            stateProcessedEventName: 'stateProcessed',
+            GOLButttonEventName : 'GOLButtton'
         };
     }
 

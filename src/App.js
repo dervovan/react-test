@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
-import utl from './Logic/Utility'
-import StateProcessor from './Logic/StateProcessor'
-import Board from './ViewModel/Board'
+import utl from './Logic/Utility';
+import StateProcessor from './Logic/StateProcessor';
+import Board from './ViewModel/Board';
+
 // import ReactDOM from 'react-dom';
 
 class Game extends Component {
@@ -25,24 +26,12 @@ class Game extends Component {
       <div className = "game">
         <div className = "game-board">
           {Array(this.size.length).fill(null).map((val, index) => 
-            {
-               // !!! вот тут - я надеюсь получить ссылку на js-объект Board, который наследует Component.
-               // однако тут я получаю react-объект, у которого непонятно как получить ссылку на внутренний Board 
-               let board =
-                // React.createElement(
-                // Board, { key :"gb" + index, 
-                // index : index, 
-                // updateState : this.StateProcessor.updateByCellEvent })
-                <Board 
+            (<Board 
                   key = {"gb" + index} 
                   index = {index} 
                   updateState = {this.StateProcessor.updateByCellEvent}
-                  sp = {this.StateProcessor} />
-
-                  /// тут хочу добавить Board, чтобы потом вызывать его методы.
-                //this.StateProcessor.addBoard(board);
-              return board;}
-          )}
+                  sp = {this.StateProcessor} />)
+              )}
         </div>
         <GameInfo 
           currentStep = {this.StateProcessor.currentStep}
@@ -88,7 +77,7 @@ class GameInfo extends Component{
               maxValue = {this.state.maxStep} />
           </div>
           <div>
-            {/* <AddStep /> */}
+            { <GOLButton /> }
           </div>
           <ol>{/* TODO */}</ol>
         </div>
@@ -103,11 +92,12 @@ class SelectIteration extends Component{
   }
 
   handleChange(event) {
+    console.log("handleChange  ", this);
     //console.log(' - ', event.target.value , event.target.max, event.target);
     window.dispatchEvent(
       new CustomEvent(
           utl.constants().stepChangedByInputEventName, 
-          {detail: {currentStep: event.target.value, maxStep: event.target.max}}));
+          {detail: {currentStep: event.target.value, maxStep: event.target.max, thissss: this}}));
   }
 
   render(){
@@ -145,23 +135,31 @@ class ShowCurrentIteration extends Component{
   }
 }
 
-class AddStep extends Component{
+class GOLButton extends Component{
   constructor(){
     super();
-    this.count = 0;
+    this.state = {GOLTurnedOn : false};
+    //this.clicked = this.clicked.bind(this);
+    
   }
 
   componentDidMount() {
     this.htmlElement.addEventListener("click", ()=> {
-      this.count++;
-      window.dispatchEvent(new CustomEvent(utl.constants().stateProcessedEventName, {detail: {currentStep: this.count, maxStep: this.count}}));
+      this.setState((prev) => ({GOLTurnedOn: !prev.GOLTurnedOn}));
+      window.dispatchEvent(new CustomEvent(utl.constants().GOLButttonEventName));
      });
   }
+
+  clicked (){
+    
+  }
+  
   
   render(){
     return(
-      <div className="add-step-button"
+      <div className={"add-step-button" + (this.state.GOLTurnedOn ? " turn-on" : " turn-off")}
             ref={elem => this.htmlElement = elem} >
+            
       </div>
     );
   }

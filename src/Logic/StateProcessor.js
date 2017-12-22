@@ -1,4 +1,5 @@
 import utl from '../Logic/Utility';
+import GoL from '../Logic/GOL';
 
 class StateProcessor {
     constructor(size, initialState){
@@ -9,7 +10,11 @@ class StateProcessor {
         this.boards = [];
         this.timeLine.push(this.state);
         this.updateByCellEvent = this.updateByCellEvent.bind(this);
-        this.updateByStepPicked = utl.debounce(this.updateByStepPicked.bind(this), 500);
+        this.updateByStepPicked = utl.debounce(this.updateByStepPicked.bind(this), 200);
+        console.log('--');
+        console.log(GoL);
+        this.gol = GoL();
+        console.log(this.gol);
         // this.onStepChanged = this.changeTimeStamp.bind(this);
         this.listenToEvents();
     }
@@ -70,28 +75,69 @@ class StateProcessor {
         window.addEventListener(
             utl.constants().stepChangedByInputEventName, 
             this.updateByStepPicked);
+
+        window.addEventListener(
+            utl.constants().GOLButttonEventName,
+            this.startGOL);
     }
 
+    startGOL(){
+        console.log(this);
+        this.golTurnedOn = !this.golTurnedOn;
+        if (!this.golTurnedOn){
+            return;
+        }  
+ 
+        var timerId = 
+        setInterval(() => {
+            if (this.golTurnedOn)
+            {
+                var processedState = this.gol.applyRules(this.state);
+                this.timeLine.push(processedState);
+                this.onTimeStampAdded();
+                this.updateField(processedState);
+            } else {
+                clearInterval(timerId);
+            }
+        }, 1000);
+    }
+    
     updateByStepPicked(event){
+        console.log(this);
         let pickedState = this.timeLine[event.detail.currentStep];
-        //console.log(this.size);
-        //console.log(this.size.length, this.size.columnCount);
-        console.time('1');
+        this.updateField(pickedState);
+        
+        // for (var i = 0; i < this.boards.length; i++) {
+        //     //console.time('2');
+        //     var position = utl.positionByIndex(this.size.columnCount, this.boards[i].index);
+        //     //console.log('--', position.row, position.column, this.boards[i].index);
+        //     var newState = utl.crop2dArray(
+        //                             pickedState,
+        //                             position.row * this.size.boardSize,
+        //                             position.column * this.size.boardSize,
+        //                             this.size.boardSize);
+        //     this.boards[i].updateState(newState);
+        //     //console.log(newState);
+        //     // console.log(this.boards[i].updateState);
+        //     //console.timeEnd('2');
+        // }
+        //console.timeEnd('1');
+    }
+
+    updateField(newState){
         for (var i = 0; i < this.boards.length; i++) {
-            console.time('2');
+            //console.time('2');
             var position = utl.positionByIndex(this.size.columnCount, this.boards[i].index);
             //console.log('--', position.row, position.column, this.boards[i].index);
-            var newState = utl.crop2dArray(
-                                    pickedState,
+            var newBoardState = utl.crop2dArray(
+                                    newState,
                                     position.row * this.size.boardSize,
                                     position.column * this.size.boardSize,
                                     this.size.boardSize);
-            this.boards[i].updateState(newState);
-            //console.log(newState);
+            this.boards[i].updateState(newBoardState);
             // console.log(this.boards[i].updateState);
-            console.timeEnd('2');
+            //console.timeEnd('2');
         }
-        console.timeEnd('1');
     }
 
     // changeTimeStamp(pickStepElement, args){

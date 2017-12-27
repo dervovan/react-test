@@ -101,16 +101,26 @@ ol, ul {
 .range-legend-value{
   
 }
-.add-step-button{
-  border: 1px red solid;
+.toggle-gol-button{
+  border: 1px black solid;
   width: 150px;
   height: 150px;
+  display: flex;
+  align-items: center;
+  font-size: 5em;
+  margin: auto;
+  margin-top: 20px;
+  padding-left: 10px;
+  cursor: pointer;
 }
 .turn-on{
   background: green;
-  content: "OFF";
 }
 .turn-off{
   background: white;
-  content: "ON";
+}
+.draw-info{
+  margin-left: 30px;
+  margin-top: 30px;
+
 }

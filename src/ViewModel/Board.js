@@ -9,7 +9,6 @@ class Board extends Component {
       this.handleCellEvent = this.handleCellEvent.bind(this);
       this.index = data.index;
       data.sp.addBoard(this);
-      // this.updateState = this.updateState.bind(this);
     }
   
     static get size(){

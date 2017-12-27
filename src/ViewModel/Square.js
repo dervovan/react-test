@@ -21,12 +21,17 @@ class Square extends Component {
       return false;
     }
   
-    handleEvent(){
+    handleEvent(e){
+      if (e.buttons !== 1){
+        return;
+      }
+      
       this.props.handleEvent(
         {
           rowIndex: this.props.rowIndex, 
           columnIndex:  this.props.columnIndex,
-          value: this.props.value
+          value: this.props.value,
+          event: e
         });
     }
   

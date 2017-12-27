@@ -17,7 +17,11 @@ class Game extends Component {
       columnCount: 5
     };
     var initialState = Array(this.size.rowCount * this.size.boardSize).fill(false).map(() => Array(this.size.boardSize * this.size.columnCount).fill(0));
-    /// to do - add this state to each board
+    // initialState[5][5] = 1;
+    // initialState[6][6] = 1;
+    // initialState[7][4] = 1;
+    // initialState[7][5] = 1;
+    // initialState[7][6] = 1;
     this.StateProcessor = new StateProcessor(this.size, initialState);
   }
 
@@ -35,7 +39,6 @@ class Game extends Component {
         </div>
         <GameInfo 
           currentStep = {this.StateProcessor.currentStep}
-          // onStepChanged = {this.StateProcessor.onStepChanged}
           timeLineSize = {this.StateProcessor.timeLine.length}
         />
       </div>
@@ -46,23 +49,17 @@ class Game extends Component {
 class GameInfo extends Component{
   constructor(props){
     super(props);
-    // this.state = {currentStep: props.currentStep, maxStep: props.timeLineSize};
     this.state = {currentStep: 0, maxStep: 0};
-    // this.onStepChanged = this.onStepChanged.bind(this);
-    // this.changeState = this.changeState.bind(this);
   }
 
   componentDidMount() {
     window.addEventListener(utl.constants().stateProcessedEventName, 
       (event) => this.setState((prev, props) => {
-        // console.log(1);
-        // console.log('---', event.detail.currentStep, event.detail.maxStep, prev.maxStep);
         return {currentStep: event.detail.currentStep, maxStep: event.detail.maxStep}
       }));
 
     window.addEventListener(utl.constants().stepChangedByInputEventName, 
       (event) => this.setState((prev, props) => {
-        // console.log(2);
         return {currentStep: event.detail.currentStep}
       }));
   }
@@ -92,12 +89,10 @@ class SelectIteration extends Component{
   }
 
   handleChange(event) {
-    console.log("handleChange  ", this);
-    //console.log(' - ', event.target.value , event.target.max, event.target);
     window.dispatchEvent(
       new CustomEvent(
           utl.constants().stepChangedByInputEventName, 
-          {detail: {currentStep: event.target.value, maxStep: event.target.max, thissss: this}}));
+          {detail: {currentStep: event.target.value, maxStep: event.target.max}}));
   }
 
   render(){
@@ -139,8 +134,6 @@ class GOLButton extends Component{
   constructor(){
     super();
     this.state = {GOLTurnedOn : false};
-    //this.clicked = this.clicked.bind(this);
-    
   }
 
   componentDidMount() {
@@ -150,16 +143,14 @@ class GOLButton extends Component{
      });
   }
 
-  clicked (){
-    
-  }
-  
-  
   render(){
     return(
-      <div className={"add-step-button" + (this.state.GOLTurnedOn ? " turn-on" : " turn-off")}
-            ref={elem => this.htmlElement = elem} >
-            
+      <div className ={"gol-info"}>
+        <div className={"toggle-gol-button" + (this.state.GOLTurnedOn ? " turn-on" : " turn-off")}
+              ref={elem => this.htmlElement = elem} >
+              {this.state.GOLTurnedOn ?  "ON" : "OFF"}
+        </div>
+        <div className ={"draw-info"}>Draw with mouse 1 pressed</div>
       </div>
     );
   }

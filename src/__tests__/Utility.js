@@ -8,6 +8,7 @@ it('CA different length', () => {
   expect(utl.mdaCompare(first, second)).toEqual(false);
 });
 
+
 it('CA equal arrays', () => {
   
   var first = Array(10).fill(1);

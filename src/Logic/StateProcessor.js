@@ -7,22 +7,17 @@ class StateProcessor {
         this.timeLine = [];
         this.curStep = 0;
         this.state = initialState;
+        this.golTurnedOn = false;
         this.boards = [];
         this.timeLine.push(this.state);
         this.updateByCellEvent = this.updateByCellEvent.bind(this);
         this.updateByStepPicked = utl.debounce(this.updateByStepPicked.bind(this), 200);
-        console.log('--');
-        console.log(GoL);
         this.gol = GoL();
-        console.log(this.gol);
-        // this.onStepChanged = this.changeTimeStamp.bind(this);
         this.listenToEvents();
     }
 
     set currentStep(value){
         this.curStep = value;
-        // console.log(this.curStep);
-        
     }
 
     get currentStep(){
@@ -55,6 +50,9 @@ class StateProcessor {
     }
 
     updateByCellEvent(board, args){
+        if (this.golTurnedOn){
+            return;
+        }
         var stateBoard = this.getBoardDataByIndex(board.index);
         stateBoard.data[args.rowIndex][args.columnIndex] = args.value ? 0 : 1;
         this.timeLine.push(this.state);
@@ -78,75 +76,47 @@ class StateProcessor {
 
         window.addEventListener(
             utl.constants().GOLButttonEventName,
-            this.startGOL);
+            this.startGOL.bind(this));
     }
 
     startGOL(){
-        console.log(this);
         this.golTurnedOn = !this.golTurnedOn;
         if (!this.golTurnedOn){
             return;
         }  
  
         var timerId = 
-        setInterval(() => {
-            if (this.golTurnedOn)
-            {
-                var processedState = this.gol.applyRules(this.state);
-                this.timeLine.push(processedState);
-                this.onTimeStampAdded();
-                this.updateField(processedState);
-            } else {
-                clearInterval(timerId);
-            }
-        }, 1000);
+            setInterval(() => {
+                if (this.golTurnedOn)
+                {
+                    var processedState = this.gol.applyRules(this.state);
+                    this.timeLine.push(processedState);
+                    this.state = processedState;
+                    this.onTimeStampAdded();
+                    this.updateField(processedState);
+                } else {
+                    clearInterval(timerId);
+                }
+            }, 0);
     }
     
     updateByStepPicked(event){
-        console.log(this);
         let pickedState = this.timeLine[event.detail.currentStep];
         this.updateField(pickedState);
-        
-        // for (var i = 0; i < this.boards.length; i++) {
-        //     //console.time('2');
-        //     var position = utl.positionByIndex(this.size.columnCount, this.boards[i].index);
-        //     //console.log('--', position.row, position.column, this.boards[i].index);
-        //     var newState = utl.crop2dArray(
-        //                             pickedState,
-        //                             position.row * this.size.boardSize,
-        //                             position.column * this.size.boardSize,
-        //                             this.size.boardSize);
-        //     this.boards[i].updateState(newState);
-        //     //console.log(newState);
-        //     // console.log(this.boards[i].updateState);
-        //     //console.timeEnd('2');
-        // }
-        //console.timeEnd('1');
     }
 
     updateField(newState){
         for (var i = 0; i < this.boards.length; i++) {
-            //console.time('2');
             var position = utl.positionByIndex(this.size.columnCount, this.boards[i].index);
-            //console.log('--', position.row, position.column, this.boards[i].index);
             var newBoardState = utl.crop2dArray(
                                     newState,
                                     position.row * this.size.boardSize,
                                     position.column * this.size.boardSize,
                                     this.size.boardSize);
             this.boards[i].updateState(newBoardState);
-            // console.log(this.boards[i].updateState);
-            //console.timeEnd('2');
         }
     }
-
-    // changeTimeStamp(pickStepElement, args){
-    //     this.currentStep = args.value;
-    //     // var current = this.state;
-    //     // var next = this.timeLine[args.value];
-    //     // pickStepElement.changeState(args.value, pickStepElement.state.maxStep)
-    // }
-    
+   
     get currentState(){
         return this.state;
     }
